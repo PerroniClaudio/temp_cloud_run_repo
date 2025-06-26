@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    supervisor \
+    supervisor 
     
 
 # Configura e installa le estensioni PHP necessarie
