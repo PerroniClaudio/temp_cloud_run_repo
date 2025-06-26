@@ -42,7 +42,7 @@ COPY . .
 # RUN pnpm i
 # RUN pnpm build
 # Installa le dipendenze del progetto
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install
 
 
 
