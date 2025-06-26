@@ -1,4 +1,4 @@
-# Usa l'immagine ufficiale di PHP 8.3 con FPM
+# Usa l'immagine ufficiale di PHP 8.3 con FPM (Laravel 12 richiede PHP 8.2+)
 FROM php:8.3-fpm
 
 # Installa le dipendenze necessarie
@@ -12,8 +12,7 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     supervisor \
-    nodejs \
-    npm
+    
 
 # Configura e installa le estensioni PHP necessarie
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -37,22 +36,33 @@ WORKDIR /var/www/html
 # Copia i file dell'applicazione
 COPY . .
 
-# Esegui npm build
-# RUN npm install -g pnpm
-# RUN pnpm i
-# RUN pnpm build
+
+
 # Installa le dipendenze del progetto
 RUN composer install
 
+# Forza php-fpm ad ascoltare su 0.0.0.0:8080
+RUN sed -i 's|^listen = .*|listen = 0.0.0.0:8080|' /usr/local/etc/php-fpm.d/www.conf
 
+# Se il comando precedente fallisce, puoi decommentare la seguente riga per ignorare l'errore
+# RUN echo "Composer install failed, but continuing anyway"
+
+# Ottimizza la configurazione per la produzione
+# RUN php artisan config:cache \
+#     && php artisan route:cache \
+#     && php artisan view:cache
 
 # Imposta i permessi corretti
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+    && chmod -R 755 /var/www/html/storage
 
-# Esponi la porta 8080
+# Crea un link simbolico per vedere i log Laravel in stdout
+RUN mkdir -p /var/www/html/storage/logs && \
+    touch /var/www/html/storage/logs/laravel.log && \
+    ln -sf /dev/stdout /var/www/html/storage/logs/laravel.log
+
+# Esponi la porta 8080 per FPM
 EXPOSE 8080
 
-# Avvia il server Laravel sulla porta 8080
+# Avvia il server Laravel (non FPM che non serve HTTP direttamente)
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
