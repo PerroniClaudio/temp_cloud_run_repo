@@ -1,5 +1,5 @@
 # Usa l'immagine ufficiale di PHP 8.3 con FPM
-FROM php:8.4-fpm-bookworm AS builder
+FROM php:8.3-fpm
 
 # Installa le dipendenze necessarie
 RUN apt-get update && apt-get install -y \
@@ -32,7 +32,7 @@ RUN echo "post_max_size = 20M" >> /usr/local/etc/php/php.ini
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Imposta la directory di lavoro
-WORKDIR /app
+WORKDIR /var/www/html
 
 # Copia i file dell'applicazione
 COPY . .
@@ -45,7 +45,21 @@ COPY . .
 # Nota: questo passo potrebbe fallire se non hai un composer.json valido nella directory del progetto
 RUN composer install
 
-FROM cgr.dev/chainguard/php:latest
-COPY --from=builder /app /app
+# Forza php-fpm ad ascoltare su 0.0.0.0:8080
+RUN sed -i 's|^listen = .*|listen = 0.0.0.0:8080|' /usr/local/etc/php-fpm.d/www.conf
 
-ENTRYPOINT [ "php", "/app/public" ]
+# Se il comando precedente fallisce, puoi decommentare la seguente riga per ignorare l'errore
+# RUN echo "Composer install failed, but continuing anyway"
+
+# Ottimizza la configurazione per la produzione
+# RUN php artisan config:cache \
+#     && php artisan route:cache \
+#     && php artisan view:cache
+
+# Copia la configurazione di supervisord
+# Imposta i permessi corretti
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage
+
+# Esponi la porta 8080 per FPM
+EXPOSE 8080
