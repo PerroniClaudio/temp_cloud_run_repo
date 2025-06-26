@@ -44,10 +44,7 @@ COPY . .
 # Installa le dipendenze del progetto
 RUN composer install --no-dev --optimize-autoloader
 
-# Ottimizza la configurazione per la produzione
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+
 
 # Imposta i permessi corretti
 RUN chown -R www-data:www-data /var/www/html \
