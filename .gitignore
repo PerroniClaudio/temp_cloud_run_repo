@@ -1,0 +1,115 @@
+# Laravel specific
+/vendor/
+/node_modules/
+/public/storage
+/storage/*.key
+/storage/app/public/*
+!/storage/app/public/.gitignore
+
+# Environment files
+.env
+.env.backup
+.env.production
+.env.local
+.env.testing
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Laravel specific cache and logs
+/storage/logs/*.log
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+
+# Composer
+composer.phar
+auth.json
+
+# NPM
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Build files
+/public/hot
+/public/storage
+/public/mix-manifest.json
+/public/js/app.js
+/public/css/app.css
+
+# Testing
+Homestead.json
+Homestead.yaml
+phpunit.xml.dist
+.phpunit.result.cache
+coverage/
+
+# Docker
+docker-compose.override.yml
+
+# Laravel Horizon
+horizon.log
+
+# Laravel Telescope
+storage/telescope/
+
+# Backup files
+*.bak
+*.backup
+
+# Temporary files
+*.tmp
+*.temp
+
+# API keys and sensitive data (specific to your project)
+/keys/*.json
+!/keys/.gitkeep
+
+# Laravel Sail
+/.sail/
+
+# Laravel Breeze/Jetstream
+/public/build/
+/resources/js/build/
+
+# Vite
+vite.config.js.timestamp-*
+
+# Local development
+.vagrant/
+.env.*.php
+.env.php
+.phpunit.result.cache
+
+# Analytics and tracking
+.ackrc
+.agignore
+.envrc
+
+# Laravel specific storage directories
+storage/app/livewire-tmp/
+storage/medialibrary/
+
+# Deployment scripts (if sensitive)
+deploy.sh
+deploy/
+
+# Local configuration
+local.conf
