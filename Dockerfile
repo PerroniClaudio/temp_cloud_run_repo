@@ -56,10 +56,6 @@ RUN sed -i 's|^listen = .*|listen = 0.0.0.0:8080|' /usr/local/etc/php-fpm.d/www.
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage
 
-# Crea un link simbolico per vedere i log Laravel in stdout
-RUN mkdir -p /var/www/html/storage/logs && \
-    touch /var/www/html/storage/logs/laravel.log && \
-    ln -sf /dev/stdout /var/www/html/storage/logs/laravel.log
 
 # Esponi la porta 8080 per FPM
 EXPOSE 8080
