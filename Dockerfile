@@ -42,24 +42,20 @@ COPY . .
 # RUN pnpm i
 # RUN pnpm build
 # Installa le dipendenze del progetto
-# Nota: questo passo potrebbe fallire se non hai un composer.json valido nella directory del progetto
-RUN composer install
-
-# Forza php-fpm ad ascoltare su 0.0.0.0:8080
-RUN sed -i 's|^listen = .*|listen = 0.0.0.0:8080|' /usr/local/etc/php-fpm.d/www.conf
-
-# Se il comando precedente fallisce, puoi decommentare la seguente riga per ignorare l'errore
-# RUN echo "Composer install failed, but continuing anyway"
+RUN composer install --no-dev --optimize-autoloader
 
 # Ottimizza la configurazione per la produzione
-# RUN php artisan config:cache \
-#     && php artisan route:cache \
-#     && php artisan view:cache
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
 
-# Copia la configurazione di supervisord
 # Imposta i permessi corretti
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Esponi la porta 8080 per FPM
+# Esponi la porta 8080
 EXPOSE 8080
+
+# Avvia il server Laravel sulla porta 8080
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
