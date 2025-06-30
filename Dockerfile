@@ -28,12 +28,9 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 FROM php:8.4-fpm-alpine
-COPY --from=builder /app /app
 
 # Installa nginx e supervisor
 RUN apk add --no-cache nginx supervisor
-
-WORKDIR /app
 
 # Configura nginx
 COPY ./nginx/default.conf /etc/nginx/nginx.conf
@@ -43,6 +40,17 @@ RUN mkdir -p /run/nginx /var/log/nginx
 
 # Configura supervisord
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+COPY --from=builder /app /app
+
+WORKDIR /app
+
+# Imposta i permessi corretti per Laravel
+RUN mkdir -p /app/storage/logs /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/bootstrap/cache \
+    && chown -R www-data:www-data /app \
+    && chmod -R 755 /app \
+    && chmod -R 775 /app/storage \
+    && chmod -R 775 /app/bootstrap/cache
 
 # Esponi la porta 8080
 EXPOSE 8080
