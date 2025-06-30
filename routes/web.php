@@ -22,7 +22,8 @@ Route::get('/', function () {
         'Laravel' => app()->version(),
         'timezone' => config('app.timezone'),
         'current_time' => now()->toDateTimeString(),
-        'environment' => config('app.env')
+        'environment' => config('app.env'),
+        'tenant' => config('app.tenant'),
     ];
 });
 
