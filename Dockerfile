@@ -1,4 +1,4 @@
-FROM php:8.4-fpm-alpine
+FROM php:8.4-bookworm 
 
 # Installa le dipendenze necessarie
 RUN apt-get update && apt-get install -y \
