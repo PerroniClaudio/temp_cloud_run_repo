@@ -1,16 +1,16 @@
-FROM php:8.4-bookworm 
+FROM php:8.4-fpm-alpine 
 
 # Installa le dipendenze necessarie
-RUN apt-get update && apt-get install -y \
+RUN apk add --no-cache \
     libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
     libzip-dev \
     zip \
     unzip \
     git \
     curl \
-    supervisor 
+    supervisor
 
 # Configura e installa le estensioni PHP necessarie
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
