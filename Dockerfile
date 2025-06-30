@@ -27,26 +27,13 @@ COPY . .
 # Installa le dipendenze del progetto
 RUN composer install --no-dev --optimize-autoloader
 
-FROM cgr.dev/chainguard/php:latest-fpm
+FROM cgr.dev/chainguard/laravel:latest
 COPY --from=builder /app /app
 
-# Installa nginx e supervisor
-RUN apk add --no-cache nginx supervisor
-
-# Imposta la directory di lavoro
 WORKDIR /app
 
-# Configura Nginx
-COPY ./nginx/default.conf /etc/nginx/default.conf
-
-# Crea le directory necessarie per nginx
-RUN mkdir -p /run/nginx /var/log/nginx
-
-# Configura supervisord per gestire nginx e php-fpm
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Esponi la porta 80
+# Esponi la porta 8080 per FPM
 EXPOSE 8080
 
-# Avvia supervisord che gestirà nginx e php-fpm
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Avvia il server Laravel (non FPM che non serve HTTP direttamente)
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
