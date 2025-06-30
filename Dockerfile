@@ -1,4 +1,4 @@
-FROM php:8.4-bookworm AS builder
+FROM php:8.4-fpm-alpine
 
 # Installa le dipendenze necessarie
 RUN apt-get update && apt-get install -y \
@@ -18,17 +18,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Imposta la directory di lavoro
-WORKDIR /app
-
-# Copia i file dell'applicazione
-COPY . .
-
-# Installa le dipendenze del progetto
-RUN composer install --no-dev --optimize-autoloader
-
-FROM php:8.4-fpm-alpine
-
 # Installa nginx e supervisor
 RUN apk add --no-cache nginx supervisor
 
@@ -41,9 +30,11 @@ RUN mkdir -p /run/nginx /var/log/nginx
 # Configura supervisord
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-COPY --from=builder /app /app
-
+# Imposta la directory di lavoro
 WORKDIR /app
+
+# Copia i file dell'applicazione
+COPY . .
 
 # Imposta i permessi corretti per Laravel
 RUN mkdir -p /app/storage/logs /app/storage/framework/cache /app/storage/framework/sessions /app/storage/framework/views /app/bootstrap/cache \
@@ -51,6 +42,9 @@ RUN mkdir -p /app/storage/logs /app/storage/framework/cache /app/storage/framewo
     && chmod -R 755 /app \
     && chmod -R 775 /app/storage \
     && chmod -R 775 /app/bootstrap/cache
+
+# Installa le dipendenze del progetto
+RUN composer install --no-dev --optimize-autoloader
 
 # Esponi la porta 8080
 EXPOSE 8080
